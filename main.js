@@ -1,10 +1,41 @@
+// magic consts
+const MIN_BOOST_DIST = 2000;
+const MIN_BOOST_ANGLE = 1;
+const MIN_BOOST_CHECKPOINTS = 3;
+
+const BREAK_DIST_1 = 1300;
+const BREAK_DIST_2 = 1100;
+const BREAK_DIST_3 = 800;
+
 // AUX vars
 let boostAvailable = true;
 let loopCount = 0;
-let breakCount = 0;
 let checkpoint = 0;
 let lastCPdist = 0;
 let lastChk = 0;
+
+// AUX funcs
+const getThrust = (dist, angle) => {
+  if (angle > 90) {
+    return 0;
+  } else if (
+    dist > MIN_BOOST_DIST &&
+    boostAvailable &&
+    angle <= MIN_BOOST_ANGLE &&
+    checkpoint >= MIN_BOOST_CHECKPOINTS
+  ) {
+    boostAvailable = false;
+    return 'BOOST';
+  } else if (dist <= BREAK_DIST_3) {
+    return 25;
+  } else if (dist <= BREAK_DIST_2) {
+    return 50;
+  } else if (dist <= BREAK_DIST_1) {
+    return 75;
+  }
+
+  return 100;
+}
 
 
 // game loop
@@ -38,51 +69,14 @@ while (true) {
     // You have to output the target position
     // followed by the power (0 <= thrust <= 100)
     // i.e.: "x y thrust"
-    const MIN_SPEED = 75;
-    let thrust = MIN_SPEED;
-    const ANGLE = Math.abs(nextCheckpointAngle);
-
-    if (ANGLE < 90) {
-      if (ANGLE < 3) {
-        thrust = 100;
-      } else {
-        if (nextCheckpointDist <= 600) {
-          breakCount += 1;
-          thurst = MIN_SPEED;
-        } else {
-            thrust = 100;
-            breakCount = 0;
-        }
-      }
-    } else {
-        breakCount += 1;
-        thurst = 0;
-    }
-
-    // break for too long
-    if (breakCount > 2) {
-        breakCount = 0;
-        thrust = 100;
-    }
-
-    let shouldBoost = false;
-    if (
-        boostAvailable
-        && nextCheckpointDist > 2900
-        && ANGLE < 2
-        && checkpoint >= 3
-    ) {
-        shouldBoost = 'BOOST';
-        boostAvailable = false;
-    }
+    const thrust = getThrust(nextCheckpointDist, Math.abs(nextCheckpointAngle));
 
     console.error({
       loopCount,
       nextCheckpointDist,
       nextCheckpointAngle,
-      thrust: shouldBoost || thrust,
+      thrust,
       boostAvailable,
-      breakCount,
       checkpoint,
     })
 
@@ -91,7 +85,7 @@ while (true) {
     } ${
         nextCheckpointY
     } ${
-        shouldBoost || thrust
+        thrust
     }`;
     console.log(command);
 }
