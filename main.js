@@ -8,6 +8,9 @@
 let didBoost = false;
 let loopCount = 0;
 let breakCount = 0;
+let checkpoint = 0;
+let lastCPdist = 0;
+let lastChk = 0;
 
 while (true) {
     loopCount += 1;
@@ -22,12 +25,27 @@ while (true) {
     const opponentX = parseInt(inputs[0]);
     const opponentY = parseInt(inputs[1]);
 
+    // checkpoint counter
+    if (!lastChk && lastCPdist !== 0 && nextCheckpointDist > lastCPdist) {
+      checkpoint += 1;
+      lastChk = 1;
+    }
+
+    if (!!lastChk && lastChk < 13) {
+      lastChk += 1
+    } else if (!!lastChk) {
+      lastChk = 0;
+    }
+
+    lastCPdist = nextCheckpointDist;
+
     // You have to output the target position
     // followed by the power (0 <= thrust <= 100)
     // i.e.: "x y thrust"
-    const MIN_SPEED = 5;
+    const MIN_SPEED = 7;
     let thrust = MIN_SPEED;
     const ANGLE = Math.abs(nextCheckpointAngle);
+    const TOO_CLOSE = opponentX < 1000 || opponentY < 1000
 
     if (ANGLE < 82) {
         if (nextCheckpointDist <= 1600) {
@@ -50,22 +68,23 @@ while (true) {
 
     let shouldBoost = false;
     if (
-        !didBoost &&
-        nextCheckpointDist > 8000 &&
-        ANGLE <= 3
-        && loopCount > 150
+        !didBoost
+        && nextCheckpointDist > 8000
+        && ANGLE <= 3
+        && checkpoint >= 7
     ) {
         shouldBoost = 'BOOST';
         didBoost = true;
     }
 
     console.error({
-        nextCheckpointDist,
-        nextCheckpointAngle,
-        thrust: shouldBoost || thrust,
-        didBoost,
-        loopCount,
-        breakCount,
+      loopCount,
+      nextCheckpointDist,
+      nextCheckpointAngle,
+      thrust: shouldBoost || thrust,
+      didBoost,
+      breakCount,
+      checkpoint,
     })
 
     const command = `${
