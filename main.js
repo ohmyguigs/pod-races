@@ -38,15 +38,15 @@ while (true) {
     // You have to output the target position
     // followed by the power (0 <= thrust <= 100)
     // i.e.: "x y thrust"
-    const MIN_SPEED = 42;
+    const MIN_SPEED = 75;
     let thrust = MIN_SPEED;
     const ANGLE = Math.abs(nextCheckpointAngle);
 
-    if (ANGLE < 82) {
-      if (ANGLE < 2) {
+    if (ANGLE < 90) {
+      if (ANGLE < 3) {
         thrust = 100;
       } else {
-        if (nextCheckpointDist <= 1600) {
+        if (nextCheckpointDist <= 600) {
           breakCount += 1;
           thurst = MIN_SPEED;
         } else {
@@ -70,7 +70,7 @@ while (true) {
         boostAvailable
         && nextCheckpointDist > 2900
         && ANGLE < 2
-        && checkpoint >= 0
+        && checkpoint >= 3
     ) {
         shouldBoost = 'BOOST';
         boostAvailable = false;
