@@ -15,6 +15,7 @@ let lastCPdist = 0;
 let lastChk = 0;
 
 // AUX funcs
+const getRealDist = (px, py, gx, gy) => Math.sqrt((gx - px) * (gx - px) + (gy - py) * (gy - py));
 const getThrust = (dist, angle) => {
   if (angle > 90) {
     return 0;
@@ -52,8 +53,10 @@ while (true) {
     const opponentX = parseInt(inputs[0]);
     const opponentY = parseInt(inputs[1]);
 
+    const realDistance = getRealDist(x,y,nextCheckpointX,nextCheckpointY);
+
     // checkpoint counter
-    if (!lastChk && lastCPdist !== 0 && nextCheckpointDist > lastCPdist) {
+    if (!lastChk && lastCPdist !== 0 && realDistance > lastCPdist) {
       checkpoint += 1;
       lastChk = 1;
     }
@@ -64,16 +67,18 @@ while (true) {
       lastChk = 0;
     }
 
-    lastCPdist = nextCheckpointDist;
+    lastCPdist = realDistance;
 
     // You have to output the target position
     // followed by the power (0 <= thrust <= 100)
     // i.e.: "x y thrust"
-    const thrust = getThrust(nextCheckpointDist, Math.abs(nextCheckpointAngle));
+    const thrust = getThrust(realDistance, Math.abs(nextCheckpointAngle));
 
+    // dis just a log
     console.error({
       loopCount,
       nextCheckpointDist,
+      realDistance,
       nextCheckpointAngle,
       thrust,
       boostAvailable,
@@ -87,5 +92,7 @@ while (true) {
     } ${
         thrust
     }`;
+
+    // this console.log actually sends the commands
     console.log(command);
 }
