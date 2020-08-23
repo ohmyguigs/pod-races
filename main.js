@@ -1,17 +1,13 @@
-/**
- * Auto-generated code below aims at helping you parse
- * the standard input according to the problem statement.
- **/
-
-
-// game loop
-let didBoost = false;
+// AUX vars
+let boostAvailable = true;
 let loopCount = 0;
 let breakCount = 0;
 let checkpoint = 0;
 let lastCPdist = 0;
 let lastChk = 0;
 
+
+// game loop
 while (true) {
     loopCount += 1;
     var inputs = readline().split(' ');
@@ -42,39 +38,42 @@ while (true) {
     // You have to output the target position
     // followed by the power (0 <= thrust <= 100)
     // i.e.: "x y thrust"
-    const MIN_SPEED = 7;
+    const MIN_SPEED = 42;
     let thrust = MIN_SPEED;
     const ANGLE = Math.abs(nextCheckpointAngle);
-    const TOO_CLOSE = opponentX < 1000 || opponentY < 1000
 
     if (ANGLE < 82) {
+      if (ANGLE < 2) {
+        thrust = 100;
+      } else {
         if (nextCheckpointDist <= 1600) {
-            breakCount += 1;
-            thurst = MIN_SPEED;
+          breakCount += 1;
+          thurst = MIN_SPEED;
         } else {
             thrust = 100;
             breakCount = 0;
         }
+      }
     } else {
         breakCount += 1;
-        thurst = MIN_SPEED;
+        thurst = 0;
     }
 
     // break for too long
-    if (breakCount >= 3) {
+    if (breakCount > 2) {
         breakCount = 0;
         thrust = 100;
     }
 
     let shouldBoost = false;
     if (
-        !didBoost
-        && nextCheckpointDist > 8000
-        && ANGLE <= 3
-        && checkpoint >= 7
+        boostAvailable
+        && nextCheckpointDist > 2900
+        && ANGLE < 2
+        && checkpoint >= 0
     ) {
         shouldBoost = 'BOOST';
-        didBoost = true;
+        boostAvailable = false;
     }
 
     console.error({
@@ -82,7 +81,7 @@ while (true) {
       nextCheckpointDist,
       nextCheckpointAngle,
       thrust: shouldBoost || thrust,
-      didBoost,
+      boostAvailable,
       breakCount,
       checkpoint,
     })
