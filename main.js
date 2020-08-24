@@ -1,7 +1,7 @@
 // magic consts
-const MIN_BOOST_DIST = 2000;
+const MIN_BOOST_DIST = 2222;
 const MIN_BOOST_ANGLE = 1;
-const MIN_BOOST_CHECKPOINTS = 0;
+const MIN_BOOST_CHECKPOINTS = 7;
 const EDGE_ANGLE = 82;
 const MAX_BREAKING_ROUNDS = 3;
 
